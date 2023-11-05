@@ -1,4 +1,4 @@
-package src.aud1;
+package src.aud.aud1;
 
 public class Test {
     public static void main(String[] args) {
