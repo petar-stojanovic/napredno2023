@@ -1,4 +1,4 @@
-package src.aud1.lab1;
+package src.labs.lab1;
 
 import java.util.*;
 import java.util.stream.Collectors;
