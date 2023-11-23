@@ -29,7 +29,7 @@ class Shape implements Comparable<Shape> {
         String name = parts[0];
         List<Integer> numbersList = new ArrayList<>();
 
-        for (int i = 1; i < parts.length; i++) {
+        for ( int i = 1; i < parts.length; i++) {
             numbersList.add(Integer.parseInt(parts[i]));
         }
 
@@ -67,12 +67,14 @@ class ShapesApplication {
         shapeList = new ArrayList<>();
     }
 
-    public int readCanvases(InputStream inputStream) {
+    public int readCanvases(InputStream inputStream) throws IOException {
         BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream));
 
         shapeList = bf.lines()
                 .map(Shape::create)
                 .collect(Collectors.toList());
+
+        bf.close();
 
         return shapeList.stream()
                 .mapToInt(x -> x.getNumbers().size())
@@ -92,7 +94,7 @@ class ShapesApplication {
 
 public class Shapes1Test {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         ShapesApplication shapesApplication = new ShapesApplication();
 
         System.out.println("===READING SQUARES FROM INPUT STREAM===");
