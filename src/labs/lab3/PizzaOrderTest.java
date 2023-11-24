@@ -1,9 +1,6 @@
 package src.labs.lab3;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 class InvalidExtraTypeException extends Exception {
@@ -49,7 +46,7 @@ enum ExtraType {
 }
 
 enum PizzaType {
-    Standard(5), Pepperoni(12), Vegetarian(8);
+    Standard(10), Pepperoni(12), Vegetarian(8);
 
     private int price;
 
@@ -69,6 +66,8 @@ enum PizzaType {
 interface Item {
     int getPrice();
 
+    String getType();
+
 }
 
 class ExtraItem implements Item {
@@ -85,6 +84,11 @@ class ExtraItem implements Item {
     @Override
     public int getPrice() {
         return type.getPrice();
+    }
+
+    @Override
+    public String getType() {
+        return type.name();
     }
 
     @Override
@@ -118,6 +122,11 @@ class PizzaItem implements Item {
     }
 
     @Override
+    public String getType() {
+        return type.name();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof PizzaItem)) return false;
@@ -137,7 +146,33 @@ class OrderLockedException extends Exception {
 }
 
 class Order {
-    private List<Item> itemList;
+
+    private class OrderItem{
+        private Item item;
+        private int count;
+
+        public OrderItem(Item item, int count) {
+            this.item = item;
+            this.count = count;
+        }
+
+        public Item getItem() {
+            return item;
+        }
+
+        public void setItem(Item item) {
+            this.item = item;
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        public void setCount(int count) {
+            this.count = count;
+        }
+    }
+    private List<OrderItem> itemList;
     private boolean isLocked;
 
     public Order() {
@@ -152,31 +187,34 @@ class Order {
         if (count > 10) {
             throw new ItemOutOfStockException(item);
         }
-        if (itemList.contains(item)) {
-            List<Item> itemsToRemove = new ArrayList<>();
-            itemsToRemove = itemList.stream().filter(i -> i.equals(item)).collect(Collectors.toList());
-            itemList.removeAll(itemsToRemove);
-        }
 
-        for (int i = 0; i < count; i++) {
-            itemList.add(item);
+        Optional<OrderItem> orderPresent = itemList.stream().filter(it -> it.getItem().getType().equals(item.getType())).findFirst();
+
+        if(orderPresent.isPresent()){
+            orderPresent.get().setCount(count);
+            return;
         }
+        itemList.add(new OrderItem(item,count));
     }
 
     int getPrice() {
-        return itemList.stream().mapToInt(it -> it.getPrice()).sum();
+        return itemList.stream().mapToInt(it -> it.getItem().getPrice()* it.count).sum();
     }
 
     public void displayOrder() {
-
-        System.out.printf("Total:%20s %n", getPrice());
+      for(int i = 0; i < itemList.size(); i++){
+          OrderItem it = itemList.get(i);
+          System.out.printf("%3d.%-15sx%2d%5d$",i+1, it.getItem().getType(),it.getCount(),it.getCount()*it.getItem().getPrice());
+          System.out.println();
+      }
+      System.out.printf("%-22s%5d$\n","Total:", getPrice());
     }
 
     public void removeItem(int idx) throws OrderLockedException {
         if (this.isLocked) {
             throw new OrderLockedException();
         }
-        Item itemToRemove = itemList.get(idx);
+        OrderItem itemToRemove = itemList.get(idx);
         if (itemToRemove == null) {
             throw new ArrayIndexOutOfBoundsException(idx);
         }
