@@ -11,29 +11,29 @@ enum FiscalType {
     A, B, V
 }
 
+class Article {
+    int price;
+    FiscalType type;
+
+    public Article(int price, FiscalType type) {
+        this.price = price;
+        this.type = type;
+    }
+
+    public double calculateTax() {
+        if (type.equals(FiscalType.A)) {
+            return price * 0.18 * 0.15;
+        } else if (type.equals(FiscalType.B)) {
+            return price * 0.05 * 0.15;
+        } else {
+            return 0;
+        }
+    }
+}
+
 class Fiscal {
     private Long id;
     private List<Article> articles;
-
-    private static class Article {
-        int price;
-        FiscalType type;
-
-        public Article(int price, FiscalType type) {
-            this.price = price;
-            this.type = type;
-        }
-
-        public double calculateTax() {
-            if (type.equals(FiscalType.A)) {
-                return price * 0.18 * 0.15;
-            } else if (type.equals(FiscalType.B)) {
-                return price * 0.05 * 0.15;
-            } else {
-                return 0;
-            }
-        }
-    }
 
     public Fiscal(Long id, List<Article> articles) {
         this.id = id;
