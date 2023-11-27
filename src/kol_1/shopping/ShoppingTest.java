@@ -125,13 +125,17 @@ class ShoppingCart {
 
     public void blackFridayOffer(List<Integer> discountItems, OutputStream out) throws InvalidOperationException {
         PrintWriter pw = new PrintWriter(out);
+        if (discountItems.isEmpty()) {
+            throw new InvalidOperationException("There are no products with discount.");
+        }
 
         List<Product> discountedList =
                           products.stream().filter(it -> discountItems.contains(it.getId())).collect(Collectors.toList());
 
-        if (discountedList.isEmpty()) {
-            throw new InvalidOperationException("There are no products with discount.");
-        }
+        // greska kude njima
+//        if (discountedList.isEmpty()) {
+//            throw new InvalidOperationException("There are no products with discount.");
+//        }
 
         discountedList.forEach(it -> {
             double priceBefore = it.getFullPrice();
