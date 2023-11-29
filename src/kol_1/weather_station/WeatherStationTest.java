@@ -32,7 +32,10 @@ class Measurement implements Comparable<Measurement> {
 
     @Override
     public String toString() {
-        return String.format("%.1f %.1f km/h %.1f%% %.1f km %s", temperature, wind, humidity, visibility, date);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss 'GMT' yyyy");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return String.format("%.1f %.1f km/h %.1f%% %.1f km %s", temperature, wind, humidity, visibility,
+                          dateFormat.format(date));
     }
 
     @Override
@@ -73,8 +76,8 @@ class WeatherStation {
 
     public void status(Date from, Date to) {
         List<Measurement> m = measurements.stream()
-                .filter(it -> it.getDate().compareTo(from) >= 0 && it.getDate().compareTo(to) <= 0)
-                .collect(Collectors.toList());
+                          .filter(it -> it.getDate().compareTo(from) >= 0 && it.getDate().compareTo(to) <= 0)
+                          .collect(Collectors.toList());
 
         if (m.isEmpty()) {
             throw new RuntimeException();
