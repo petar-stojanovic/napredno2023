@@ -112,7 +112,9 @@ class Canvas implements Comparable<Canvas> {
 
     @Override
     public int compareTo(Canvas o) {
-        return Double.compare(getSize(), o.getSize());
+//        Comparator<Canvas> com = Comparator.comparing(Canvas::getSize).thenComparing(Canvas::getSize);
+
+        return Comparator.comparing(Canvas::getSize).thenComparing(Canvas::getSize).compare(this, o);
     }
 }
 
@@ -142,7 +144,10 @@ class ShapesApplication {
 
     public void printCanvases(OutputStream out) {
         PrintWriter pw = new PrintWriter(out);
-        canvas.stream().sorted(Comparator.reverseOrder()).forEach(pw::println);
+//        Comparator byRanking =
+//                      (Player player1, Player player2) -> Integer.compare(player1.getRanking(), player2.getRanking());
+
+        canvas.stream().sorted((l, r) -> Double.compare(l.getSize(), r.getSize())).forEach(pw::println);
         pw.flush();
     }
 }
