@@ -64,8 +64,8 @@ class DoubleMatrix {
             throw new InvalidRowNumberException();
         }
         return Arrays.stream(matrix[row - 1])
-                .max()
-                .orElseThrow();
+                .max().getAsDouble();
+//                .orElseThrow();
     }
 
     public double maxElementAtColumn(int col) throws InvalidColumnNumberException {
@@ -74,7 +74,8 @@ class DoubleMatrix {
         }
         return Arrays.stream(matrix)
                 .map(row -> row[col - 1])
-                .max((o1, o2) -> Double.compare(o1, o2)).orElseThrow();
+                .max((o1, o2) -> Double.compare(o1, o2)).get();
+//                      .orElseThrow();
     }
 
     public double sum() {
