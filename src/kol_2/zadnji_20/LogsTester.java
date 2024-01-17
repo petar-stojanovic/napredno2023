@@ -1,5 +1,36 @@
 //package src.kol_2.zadnji_20;
+//
 //import java.util.*;
+//
+//enum LogType {
+//    INFO, WARN, ERROR
+//}
+//
+//class Log {
+//    String
+//}
+//
+//
+//class LogCollector {
+//
+//
+//
+//    public void  addLog (String log){
+//
+//    }
+//
+//    public void printServicesBySeverity(){
+//
+//    }
+//
+//    public Map<Integer, Integer> getSeverityDistribuition (String service, String microservice){
+//
+//    }
+//
+//    public void displayLogs(String service, String microservice, String order){
+//
+//    }
+//}
 //
 //// 34
 //public class LogsTester {
@@ -19,8 +50,8 @@
 //                if (parts.length == 3) {
 //                    microservice = parts[2];
 //                }
-//                collector.getSeverityDistribution(service, microservice).forEach((k,v)-> System.out.printf("%d -> %d%n", k,v));
-//            } else if (line.startsWith("displayLogs")){
+//                collector.getSeverityDistribution(service, microservice).forEach((k, v) -> System.out.printf("%d -> %d%n", k, v));
+//            } else if (line.startsWith("displayLogs")) {
 //                String[] parts = line.split("\\s+");
 //                String service = parts[1];
 //                String microservice = null;
