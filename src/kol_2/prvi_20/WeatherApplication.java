@@ -1,116 +1,110 @@
 package src.kol_2.prvi_20;
 
+import java.lang.reflect.Member;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
-interface Updatable {
-    void update(float temp, float humidity, float pressure);
-}
-
-interface Subject {
-    void register(Updatable o);
-
-    void remove(Updatable o);
-
-    void notifyUpdatable();
-}
-
-interface Displayable {
+interface Display {
     void display();
+
+    void add(Measurement measurement);
 }
 
-class WeatherDispatcher implements Subject {
-    Set<Updatable> updatables;
-    float temperature;
-    float humidity;
+class ForecastDisplay implements Display {
+
     float pressure;
+    String forecast;
+    WeatherDispatcher weatherDispatcher;
 
-    public WeatherDispatcher() {
-        updatables = new HashSet<>();
-    }
-
-    public void setMeasurements(float temperature, float humidity, float pressure) {
-
-        this.temperature = temperature;
-        this.humidity = humidity;
-        this.pressure = pressure;
-
-        notifyUpdatable();
-    }
-
-
-    @Override
-    public void register(Updatable o) {
-        updatables.add(o);
-    }
-
-    @Override
-    public void remove(Updatable o) {
-        updatables.remove(o);
-    }
-
-    @Override
-    public void notifyUpdatable() {
-        for (Updatable updatable : updatables) {
-            updatable.update(temperature, humidity, pressure);
-        }
-    }
-}
-
-class CurrentConditionsDisplay implements Updatable, Displayable {
-    private float temperature;
-    private float humidity;
-
-    public CurrentConditionsDisplay(Subject weatherStation) {
-        weatherStation.register(this);
-    }
-
-    @Override
-    public void update(float temp, float humidity, float pressure) {
-        this.temperature = temp;
-        this.humidity = humidity;
-        display();
+    public ForecastDisplay(WeatherDispatcher weatherDispatcher) {
+        this.weatherDispatcher = weatherDispatcher;
+        weatherDispatcher.register(this);
+        pressure = 0;
     }
 
     @Override
     public void display() {
-        System.out.println("Temperature: " + temperature + "F");
-        System.out.println("Humidity: " + humidity + "%");
+        System.out.printf("Forecast: %s\n", forecast);
+    }
+
+    @Override
+    public void add(Measurement measurement) {
+        if (pressure < measurement.pressure) {
+            forecast = "Improving";
+        } else if (pressure > measurement.pressure) {
+            forecast = "Cooler";
+        } else {
+            forecast = "Same";
+        }
+        this.pressure = measurement.pressure;
+        display();
     }
 }
 
-class ForecastDisplay implements Updatable, Displayable {
+class CurrentConditionsDisplay implements Display {
+    float temperature;
+    float humidity;
 
-    private float currentPressure = 0.0f;
-    private float lastPressure;
+    WeatherDispatcher weatherDispatcher;
 
-    public ForecastDisplay(WeatherDispatcher weatherDispatcher) {
+    public CurrentConditionsDisplay(WeatherDispatcher weatherDispatcher) {
+        this.weatherDispatcher = weatherDispatcher;
         weatherDispatcher.register(this);
     }
 
     @Override
-    public void update(float temp, float humidity, float pressure) {
-        lastPressure = currentPressure;
-        currentPressure = pressure;
-        display();
+    public void display() {
+        System.out.printf("Temperature: %.1fF\n", temperature);
+        System.out.printf("Humidity: %.1f%%\n", humidity);
     }
 
     @Override
-    public void display() {
-        System.out.print("Forecast: ");
-        if (currentPressure == lastPressure) {
-            System.out.println("Same");
-        } else if (currentPressure < lastPressure) {
-            System.out.println("Cooler");
-        } else {
-            System.out.println("Improving");
-        }
-        System.out.println();
+    public void add(Measurement measurement) {
+        temperature = measurement.temperature;
+        humidity = measurement.humidity;
+        display();
     }
 }
 
-// 17 TODO: PRERESI
+class Measurement {
+    float temperature;
+    float humidity;
+    float pressure;
+
+    public Measurement(float temperature, float humidity, float pressure) {
+        this.temperature = temperature;
+        this.humidity = humidity;
+        this.pressure = pressure;
+    }
+}
+
+class WeatherDispatcher {
+
+    Set<Display> displays;
+
+    public WeatherDispatcher() {
+        this.displays = new HashSet<>();
+    }
+
+    public void setMeasurements(float temperature, float humidity, float pressure) {
+        Measurement measurement = new Measurement(temperature, humidity, pressure);
+        updateDisplays(measurement);
+    }
+
+    private void updateDisplays(Measurement measurement) {
+        displays.forEach(it -> it.add(measurement));
+    }
+
+    public void remove(Display display) {
+        displays.remove(display);
+    }
+
+    public void register(Display display) {
+        displays.add(display);
+    }
+}
+
 public class WeatherApplication {
 
     public static void main(String[] args) {
@@ -138,7 +132,7 @@ public class WeatherApplication {
                 if (operation == 4) {
                     weatherDispatcher.register(currentConditions);
                 }
-
+                System.out.println();
             }
         }
     }
